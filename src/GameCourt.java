@@ -24,6 +24,8 @@ public class GameCourt extends JPanel {
 	private Square square; // the Black Square, keyboard control
 	private Circle snitch; // the Golden Snitch, bounces
 	private Poison poison; // the Poison Mushroom, doesn't move
+	private SpaceShip ship;
+	private Celestial planet;
 
 	public boolean playing = false; // whether the game is running
 	private JLabel status; // Current status text (i.e. Running...)
@@ -36,46 +38,30 @@ public class GameCourt extends JPanel {
 	public static final int INTERVAL = 35;
 
 	public GameCourt(JLabel status) {
-		// creates border around the court area, JComponent method
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-		// The timer is an object which triggers an action periodically
-		// with the given INTERVAL. One registers an ActionListener with
-		// this timer, whose actionPerformed() method will be called
-		// each time the timer triggers. We define a helper method
-		// called tick() that actually does everything that should
-		// be done in a single timestep.
 		Timer timer = new Timer(INTERVAL, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tick();
 			}
 		});
-		timer.start(); // MAKE SURE TO START THE TIMER!
-
-		// Enable keyboard focus on the court area.
-		// When this component has the keyboard focus, key
-		// events will be handled by its key listener.
+		timer.start(); 
 		setFocusable(true);
 
-		// This key listener allows the square to move as long
-		// as an arrow key is pressed, by changing the square's
-		// velocity accordingly. (The tick method below actually
-		// moves the square.)
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_LEFT)
-					square.v_x = -SQUARE_VELOCITY;
-				else if (e.getKeyCode() == KeyEvent.VK_RIGHT)
-					square.v_x = SQUARE_VELOCITY;
-				else if (e.getKeyCode() == KeyEvent.VK_DOWN)
-					square.v_y = SQUARE_VELOCITY;
-				else if (e.getKeyCode() == KeyEvent.VK_UP)
-					square.v_y = -SQUARE_VELOCITY;
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				    ship.force(-1, 0); }
+				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				    ship.force(1, 0); }
+				else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				    ship.force(0, 1); }
+				else if (e.getKeyCode() == KeyEvent.VK_UP) {
+				    ship.force(0, -1); }
 			}
 
 			public void keyReleased(KeyEvent e) {
-				square.v_x = 0;
-				square.v_y = 0;
+				//
 			}
 		});
 
@@ -90,6 +76,9 @@ public class GameCourt extends JPanel {
 		square = new Square(COURT_WIDTH, COURT_HEIGHT);
 		poison = new Poison(COURT_WIDTH, COURT_HEIGHT);
 		snitch = new Circle(COURT_WIDTH, COURT_HEIGHT);
+		ship = new SpaceShip(100, 100, Color.RED);
+		planet = new Celestial(200, 200, Color.BLUE, 30);
+		
 
 		playing = true;
 		status.setText("Running...");
@@ -108,6 +97,8 @@ public class GameCourt extends JPanel {
 			// current direction.
 			square.move();
 			snitch.move();
+			gravity(ship, planet);
+			ship.move();
 
 			// make the snitch bounce off walls...
 			snitch.bounce(snitch.hitWall());
@@ -128,6 +119,18 @@ public class GameCourt extends JPanel {
 			repaint();
 		}
 	}
+	
+	private void gravity (SpaceShip body, Celestial planet) {
+	    int Xdistance = body.getCenterX() - planet.getCenterX();
+	    int Ydistance = body.getCenterY() - planet.getCenterY();
+	    
+	    
+	    
+	    System.out.println(Xdistance);
+	    
+	    body.force((int)((double)planet.getGravity() / Math.pow(Xdistance, 2)),
+	               (int)((double)planet.getGravity() / Math.pow(Ydistance, 2)));
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -135,6 +138,8 @@ public class GameCourt extends JPanel {
 		square.draw(g);
 		poison.draw(g);
 		snitch.draw(g);
+		ship.draw(g);
+		planet.draw(g);
 	}
 
 	@Override

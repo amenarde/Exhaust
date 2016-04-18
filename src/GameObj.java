@@ -1,7 +1,11 @@
 /**
- * CIS 120 Game HW
- * (c) University of Pennsylvania
- * @version 2.0, Mar 2013
+ * Antonio Menarde
+ * Space @version 0.1, 
+ * 
+ * Base Package Credit:
+ *  CIS 120 Game HW
+ *  (c) University of Pennsylvania
+ *  @version 2.0, Mar 2013
  */
 
 import java.awt.Graphics;

@@ -14,11 +14,7 @@ import javax.swing.*;
  */
 public class Game implements Runnable {
 	public void run() {
-		// NOTE : recall that the 'final' keyword notes inmutability
-		// even for local variables.
-
-		// Top-level frame in which game components live
-		// Be sure to change "TOP LEVEL FRAME" to the name of your game
+		
 		final JFrame frame = new JFrame("TOP LEVEL FRAME");
 		frame.setLocation(300, 300);
 
