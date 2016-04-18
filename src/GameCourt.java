@@ -21,9 +21,6 @@ import javax.swing.*;
 public class GameCourt extends JPanel {
 
 	// the state of the game logic
-	private Square square; // the Black Square, keyboard control
-	private Circle snitch; // the Golden Snitch, bounces
-	private Poison poison; // the Poison Mushroom, doesn't move
 	private SpaceShip ship;
 	private Celestial planet;
 
@@ -31,8 +28,8 @@ public class GameCourt extends JPanel {
 	private JLabel status; // Current status text (i.e. Running...)
 
 	// Game constants
-	public static final int COURT_WIDTH = 300;
-	public static final int COURT_HEIGHT = 300;
+	public static final int COURT_WIDTH = 1000;
+	public static final int COURT_HEIGHT = 1000;
 	public static final int SQUARE_VELOCITY = 4;
 	// Update interval for timer, in milliseconds
 	public static final int INTERVAL = 35;
@@ -51,13 +48,13 @@ public class GameCourt extends JPanel {
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				    ship.force(-1, 0); }
+				    ship.force(-10, 0); }
 				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				    ship.force(1, 0); }
+				    ship.force(10, 0); }
 				else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				    ship.force(0, 1); }
+				    ship.force(0, 10); }
 				else if (e.getKeyCode() == KeyEvent.VK_UP) {
-				    ship.force(0, -1); }
+				    ship.force(0, -10); }
 			}
 
 			public void keyReleased(KeyEvent e) {
@@ -68,16 +65,10 @@ public class GameCourt extends JPanel {
 		this.status = status;
 	}
 
-	/**
-	 * (Re-)set the game to its initial state.
-	 */
 	public void reset() {
 
-		square = new Square(COURT_WIDTH, COURT_HEIGHT);
-		poison = new Poison(COURT_WIDTH, COURT_HEIGHT);
-		snitch = new Circle(COURT_WIDTH, COURT_HEIGHT);
 		ship = new SpaceShip(100, 100, Color.RED);
-		planet = new Celestial(200, 200, Color.BLUE, 30);
+		planet = new Celestial(200, 200, Color.BLUE, 20);
 		
 
 		playing = true;
@@ -93,51 +84,38 @@ public class GameCourt extends JPanel {
 	 */
 	void tick() {
 		if (playing) {
-			// advance the square and snitch in their
-			// current direction.
-			square.move();
-			snitch.move();
 			gravity(ship, planet);
 			ship.move();
-
-			// make the snitch bounce off walls...
-			snitch.bounce(snitch.hitWall());
-			// ...and the mushroom
-			snitch.bounce(snitch.hitObj(poison));
-
-			// check for the game end conditions
-			if (square.intersects(poison)) {
-				playing = false;
-				status.setText("You lose!");
-
-			} else if (square.intersects(snitch)) {
-				playing = false;
-				status.setText("You win!");
-			}
-
-			// update the display
+			
 			repaint();
+			
+			if (ship.intersects(planet)) {
+			    playing = false;
+                status.setText("You lose!");
+			}
 		}
 	}
 	
 	private void gravity (SpaceShip body, Celestial planet) {
-	    int Xdistance = body.getCenterX() - planet.getCenterX();
-	    int Ydistance = body.getCenterY() - planet.getCenterY();
 	    
+	    int distance = (int)(Math.sqrt(Math.pow(body.getCenterX() - planet.getCenterX(), 2) +
+	                                   Math.pow(body.getCenterY() - planet.getCenterY(), 2)));
 	    
+	    int xForce = (int)((double)planet.getGravity() / Math.pow(distance, 0.75));
+	    int yForce = (int)((double)planet.getGravity() / Math.pow(distance, 0.75));
+	    if (body.getCenterX() - planet.getCenterX() >= 0) {
+	        xForce = -xForce;
+	    }
+	    if (body.getCenterY() - planet.getCenterY() >= 0) {
+            yForce = -yForce;
+        }
 	    
-	    System.out.println(Xdistance);
-	    
-	    body.force((int)((double)planet.getGravity() / Math.pow(Xdistance, 2)),
-	               (int)((double)planet.getGravity() / Math.pow(Ydistance, 2)));
+	    body.force(xForce, yForce);
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		square.draw(g);
-		poison.draw(g);
-		snitch.draw(g);
 		ship.draw(g);
 		planet.draw(g);
 	}

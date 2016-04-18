@@ -33,6 +33,11 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
     public void force (int x, int y) {
         velocityX += x;
         velocityY += y;
+        
+        if (velocityX > 10) { velocityX = 10; }
+        if (velocityX < -10) {velocityX = -10; }
+        if (velocityY > 10) { velocityY = 10; }
+        if (velocityY < -10) {velocityY = -10; }
     }
     
     public void stop() {

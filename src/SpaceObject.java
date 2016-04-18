@@ -43,6 +43,7 @@ public abstract class SpaceObject{
             }
         }
         
+        this.shape = shape;
         this.color = color;
         this.height = shape.length;
         this.width = shape[0].length;
@@ -69,24 +70,34 @@ public abstract class SpaceObject{
     }
     
     public boolean intersects(SpaceObject obj){
-        if (!inRange(obj.leftX, obj.rightX, this.leftX, this.rightX) &&
-            !inRange(obj.upperY, obj.lowerY, this.lowerY, this.upperY)) {
+        if (!inRange(obj.getLeftX(), obj.getRightX(), this.leftX, this.rightX) &&
+            !inRange(obj.getUpperY(), obj.getLowerY(), this.upperY, this.lowerY)) {
             return false;
         } else {
-            int myi = Math.max(obj.leftX, this.leftX) - this.leftX;
-            int myj = Math.max(obj.lowerY, this.lowerY) - this.upperY;
+            int myj = Math.max(obj.getLeftX(), this.leftX) - this.leftX;
+            int myi = this.upperY - Math.min(obj.getUpperY(), this.upperY);
             
-            int obji = Math.max(obj.leftX, this.leftX) - obj.leftX;
-            int objj = Math.max(obj.lowerY, this.lowerY) - this.upperY;
+            int objj = Math.max(obj.getLeftX(), this.leftX) - obj.getLeftX();
+            int obji = obj.getUpperY() - Math.min(obj.getUpperY(), this.upperY);
             
-            for(int i = 0; i < Math.min(obj.rightX, this.rightX) - Math.max(obj.leftX, this.leftX); ) {
-                for(int j = 0; j < Math.max(obj.upperY, this.upperY) - Math.min(obj.lowerY, this.lowerY); ) {
-                    if(this.shape[myi][myj] && obj.shape[obji][objj]) {
+            System.out.println(this.lowerY);
+            
+            for(int i = 0; i < Math.min(obj.getUpperY(), this.upperY) - Math.max(obj.getLowerY(), this.lowerY); ) {
+                for(int j = 0; j < Math.min(obj.getRightX(), this.rightX) - Math.max(obj.getLeftX(), this.leftX); ) {
+                    try{
+                    boolean[][] objshape = obj.getShape();
+                    if(this.shape[myi][myj] && objshape[obji][objj]) {
                         return true;
                     }
-                    myj++; objj++;
+                    }
+                    catch (Exception e) {
+                        System.out.println("myi myj: " + myi + " " + myj);
+                        System.out.println("obji objj: " + obji + " " + objj); // + obj.shape.length + " " + obj.shape[0].length
+                        throw new NullPointerException();
+                    }
+                    myj++; objj++; j++;
                 }
-                myi++; obji++;
+                myi++; obji++; i++;
             }
         }
         return false;
@@ -94,5 +105,25 @@ public abstract class SpaceObject{
     
     public void draw(Graphics g) {
         g.drawImage(image, leftX, upperY, width, height, null);
+    }
+    
+    public static boolean[][] imgToBool(BufferedImage image) {
+        if (image.getType() != BufferedImage.TYPE_INT_ARGB) {
+            throw new IllegalArgumentException();
+        }
+        
+        int width = image.getWidth();
+        int height = image.getHeight();
+        boolean[][] returnAr = new boolean[height][width];
+        
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; i < width; j++) {
+                int alpha = (image.getRGB(j, i) >> 24) & 0x000000FF;
+                if (alpha == 0) { returnAr[i][j] = false; } 
+                else { returnAr[i][j] = true; }
+            }
+        }
+        return returnAr; //TODO
+        
     }
 }
