@@ -64,63 +64,27 @@ public abstract class SpaceObject{
                  this.rightX < obj.getLeftX()  || this.leftX > obj.getRightX()) {
             return false;
         }
-        //evaluate intersection
-//        else if ((this.upperY <= obj.getUpperY() || this.lowerY >= obj.getLowerY()) &&
-//                 (this.leftX >= obj.getRightX() || this.rightX <= obj.getRightX())){ 
-//            int myi, myj, obji, objj, irange, jrange;
-//            if (this.upperY > obj.getUpperY()) {
-//                myi = this.upperY - obj.getUpperY();
-//                obji = 0;
-//                irange = obj.getUpperY() - this.lowerY;
-//            } else {
-//                myi = 0;
-//                obji = obj.getUpperY() - this.upperY;
-//                irange = this.upperY - obj.getLowerY();
-//            }
-//            
-//            if (this.leftX > obj.getLeftX()) {
-//                myj = 0;
-//                objj = this.leftX - obj.getLeftX();
-//                jrange = obj.getRightX() - this.lowerY;
-//            } else {
-//                myj = obj.getLeftX() - this.leftX;
-//                objj = 0;
-//                jrange = this.rightX - obj.getLowerY();
-//            }
-//            
-//            boolean[][] objShape = obj.getShape();
-//            
-//            for (int i = 0; i < irange; i++) {
-//                for (int j = 0; j < jrange; j++) {
-//                    if (shape[i + myi][j + myj] && objShape[i + obji][j + objj]) {
-//                        return true;
-//                    }
-//                }
-//            }
-//            System.out.println("TWO");
-//            return false;
-//        }
+        //check for conflicts within shared boundary
         else {
             int myi, myj, obji, objj, irange, jrange;
             if (this.upperY > obj.getUpperY()) {
                 myi = this.upperY - obj.getUpperY();
                 obji = 0;
-                irange = obj.getUpperY() - this.lowerY;
             } else {
                 myi = 0;
                 obji = obj.getUpperY() - this.upperY;
-                irange = this.upperY - obj.getLowerY();
             }
             
             if (this.leftX > obj.getLeftX()) {
                 myj = 0;
                 objj = this.leftX - obj.getLeftX();
-                jrange = obj.getRightX() - this.lowerY;
             } else {
                 myj = obj.getLeftX() - this.leftX;
                 objj = 0;
-                jrange = this.rightX - obj.getLowerY();
             }
+            
+            irange = Math.min(this.upperY, obj.getUpperY()) - Math.max(this.lowerY, obj.getLowerY());
+            jrange = Math.min(this.rightX, obj.getRightX()) - Math.max(this.leftX, obj.getLeftX());
             
             boolean[][] objShape = obj.getShape();
             
@@ -131,12 +95,7 @@ public abstract class SpaceObject{
                     }
                 }
             }
-            System.out.println("TWO");
             return false;
-            
-//            System.out.println(this.leftX + "LX " + this.rightX + "RX | O " + obj.getLeftX() + "LX " + obj.getRightX() + "RX");
-//            System.out.println(this.lowerY + "LY " + this.upperY + "UY | O" + obj.getLowerY() + "LY " + obj.getUpperY() + "UY\n");
-//            return false;
         }
     }
     
