@@ -32,11 +32,11 @@ public class GameCourt extends JPanel {
 	public static final int COURT_HEIGHT = 1000;
 	public static final int SQUARE_VELOCITY = 4;
 	// Update interval for timer, in milliseconds
-	public static final int INTERVAL = 35;
+	public static final int INTERVAL = 100;
 
 	public GameCourt(JLabel status) {
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
-
+		
 		Timer timer = new Timer(INTERVAL, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				tick();
@@ -45,16 +45,17 @@ public class GameCourt extends JPanel {
 		timer.start(); 
 		setFocusable(true);
 
+		int effect = 5;
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				    ship.force(-10, 0); }
+				    ship.force(-effect, 0); }
 				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				    ship.force(10, 0); }
+				    ship.force(effect, 0); }
 				else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				    ship.force(0, 10); }
+				    ship.force(0, effect); }
 				else if (e.getKeyCode() == KeyEvent.VK_UP) {
-				    ship.force(0, -10); }
+				    ship.force(0, -effect); }
 			}
 
 			public void keyReleased(KeyEvent e) {
@@ -67,8 +68,8 @@ public class GameCourt extends JPanel {
 
 	public void reset() {
 
-		ship = new SpaceShip(100, 100, Color.RED);
-		planet = new Celestial(200, 200, Color.BLUE, 20);
+		ship = new SpaceShip(100, 100);
+		planet = new Celestial(200, 200, 0);
 		
 
 		playing = true;
@@ -115,7 +116,7 @@ public class GameCourt extends JPanel {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	    super.paintComponent(g);
 		ship.draw(g);
 		planet.draw(g);
 	}

@@ -27,6 +27,7 @@ public class Game implements Runnable {
 		// Main playing area
 		final GameCourt court = new GameCourt(status);
 		frame.add(court, BorderLayout.CENTER);
+		frame.setBackground(Color.BLACK);
 
 		// Reset button
 		final JPanel control_panel = new JPanel();

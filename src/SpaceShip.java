@@ -1,21 +1,12 @@
 import java.awt.Color;
 
 public class SpaceShip extends SpaceObject implements MoveableObject{
-        private final static boolean[][] shape =   {{false, false, false, false, true, true, false, false, false, false},
-                                                    {false, false, false, true, true, true, true, false, false, false},
-                                                    {false, false, true, true, true, true, true, true, false, false},
-                                                    {false, true, true, true, true, true, true, true, true, false},
-                                                    {true, true, true, false, true, true, false, true, true, true},
-                                                    {false, false, false, false, true, true, false, false, false, false},
-                                                    {false, false, false, true, false, false, true, false, false, false},
-                                                    {false, false, false, true, false, false, true, false, false, false},
-                                                    {false, false, false, true, false, false, true, false, false, false},
-                                                    {false, false, false, true, false, false, true, false, false, false}};
+        private static String filename = "swordfish.png";
         private int velocityX = 0;
         private int velocityY = 0;
         
-    public SpaceShip (int leftX, int upperY, Color color) {
-        super(leftX, upperY, shape, color);
+    public SpaceShip (int leftX, int upperY) {
+        super(leftX, upperY, filename);
     }
     
     public void move () {
@@ -30,14 +21,16 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
     public int getXVelocity() { return velocityX; }
     public int getYVelocity() { return velocityY; }
     
-    public void force (int x, int y) {
-        velocityX += x;
-        velocityY += y;
+    public void force (int dx, int dy) {
+        velocityX += dx;
+        velocityY += dy;
         
-        if (velocityX > 10) { velocityX = 10; }
-        if (velocityX < -10) {velocityX = -10; }
-        if (velocityY > 10) { velocityY = 10; }
-        if (velocityY < -10) {velocityY = -10; }
+        int maxv = 30;
+        
+        if (velocityX > maxv) { velocityX = maxv; }
+        if (velocityX < -maxv) {velocityX = -maxv; }
+        if (velocityY > maxv) { velocityY = maxv; }
+        if (velocityY < -maxv) {velocityY = -maxv; }
     }
     
     public void stop() {

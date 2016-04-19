@@ -10,6 +10,10 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 public abstract class SpaceObject{
     
@@ -23,8 +27,6 @@ public abstract class SpaceObject{
     private boolean[][] shape;
     private BufferedImage image;
     
-    private Color color;
-    
     public int getLeftX() {return leftX;}
     public int getRightX() {return rightX;}
     public int getUpperY() {return upperY;}
@@ -33,74 +35,75 @@ public abstract class SpaceObject{
     public int getCenterX() {return centerX;}
     public int getCenterY() {return centerY;}
     
-    public SpaceObject(int leftX, int upperY, boolean[][] shape, Color color){
-        if (leftX < 0 || upperY < 0 || shape.length == 0 || color == null) {
+    public SpaceObject(int leftX, int upperY, String filename){
+        if (leftX < 0 || upperY < 0 || filename == null) {
             throw new IllegalArgumentException();
         }
-        for (int i = 0; i < shape.length; i++) {
-            if (shape[i].length != shape[0].length) {
-                throw new IllegalArgumentException();
-            }
+        
+        try {
+            this.image = ImageIO.read(new File(filename));
+        } catch (IOException e) {
+            System.out.println("Internal Error:" + e.getMessage());
+            throw new Error();
         }
         
-        this.shape = shape;
-        this.color = color;
+        this.shape = imgToBool(image);
         this.height = shape.length;
         this.width = shape[0].length;
         this.leftX = leftX; this.rightX = leftX + width;
         this.upperY = upperY; this.lowerY = upperY - height;
         this.centerY = upperY - (height / 2);
         this.centerX = leftX + (width / 2);
-        
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        for (int i = 0; i < shape.length; i++) {
-            for (int j = 0; j < shape[0].length; j++) {
-                if (shape[j][i]) {
-                    image.setRGB(i, j, color.getAlpha()<<24 | this.color.getRGB());
-                }
-                else{
-                    image.setRGB(i, j, (0<<24) | (0<<16) | (0<<8) | 0);
-                }
-            }
-        }
-    }
-    
-    private boolean inRange (int x1, int x2, int a, int b) {
-        return ((x1 <= b) && (x1 >= a)) ||  ((x2 <= b) && (x2 >= a));
     }
     
     public boolean intersects(SpaceObject obj){
-        if (!inRange(obj.getLeftX(), obj.getRightX(), this.leftX, this.rightX) &&
-            !inRange(obj.getUpperY(), obj.getLowerY(), this.upperY, this.lowerY)) {
-            return false;
-        } else {
-            int myj = Math.max(obj.getLeftX(), this.leftX) - this.leftX;
-            int myi = this.upperY - Math.min(obj.getUpperY(), this.upperY);
+        if (this.leftX <= obj.getLeftX() && this.rightX >= obj.getRightX() && 
+            this.upperY >= obj.getUpperY() && this.lowerY <= obj.getLowerY()) {
+            return true;
+        }
+        else if (obj.getLeftX() <= this.leftX && obj.getRightX() >= this.rightX && 
+                obj.getUpperY() >= this.upperY && obj.getLowerY() <= this.lowerY) {
+           return true;
+        }
+        else if ((this.upperY <= obj.getUpperY() || this.lowerY >= obj.getLowerY()) &&
+                 (this.leftX >= obj.getRightX() || this.rightX >= obj.getRightX())){ 
+            int myi, myj, obji, objj, irange, jrange;
+            if (this.upperY > obj.getUpperY()) {
+                myi = this.upperY - obj.getUpperY();
+                obji = 0;
+                irange = obj.getUpperY() - this.lowerY;
+            } else {
+                myi = 0;
+                obji = obj.getUpperY() - this.upperY;
+                irange = this.upperY - obj.getLowerY();
+            }
             
-            int objj = Math.max(obj.getLeftX(), this.leftX) - obj.getLeftX();
-            int obji = obj.getUpperY() - Math.min(obj.getUpperY(), this.upperY);
+            if (this.leftX > obj.getLeftX()) {
+                myj = 0;
+                objj = this.leftX - obj.getLeftX();
+                jrange = obj.getRightX() - this.lowerY;
+            } else {
+                myj = obj.getLeftX() - this.leftX;
+                objj = 0;
+                jrange = this.rightX - obj.getLowerY();
+            }
             
-            System.out.println(this.lowerY);
+            boolean[][] objShape = obj.getShape();
             
-            for(int i = 0; i < Math.min(obj.getUpperY(), this.upperY) - Math.max(obj.getLowerY(), this.lowerY); ) {
-                for(int j = 0; j < Math.min(obj.getRightX(), this.rightX) - Math.max(obj.getLeftX(), this.leftX); ) {
-                    try{
-                    boolean[][] objshape = obj.getShape();
-                    if(this.shape[myi][myj] && objshape[obji][objj]) {
+            for (int i = 0; i < irange; i++) {
+                for (int j = 0; j < jrange; j++) {
+                    System.out.println("i " + i + " myi " + myi + " obji " + obji);
+                    System.out.println("j " + j + " myj " + myj + " objj " + objj + "\n");
+                    if (shape[i + myi][j + myj] && objShape[i + obji][j + objj]) {
                         return true;
                     }
-                    }
-                    catch (Exception e) {
-                        System.out.println("myi myj: " + myi + " " + myj);
-                        System.out.println("obji objj: " + obji + " " + objj); // + obj.shape.length + " " + obj.shape[0].length
-                        throw new NullPointerException();
-                    }
-                    myj++; objj++; j++;
                 }
-                myi++; obji++; i++;
             }
+            return false;
         }
-        return false;
+        else {
+            return false;
+        }
     }
     
     public void draw(Graphics g) {
@@ -108,7 +111,7 @@ public abstract class SpaceObject{
     }
     
     public static boolean[][] imgToBool(BufferedImage image) {
-        if (image.getType() != BufferedImage.TYPE_INT_ARGB) {
+        if (image.getType() != BufferedImage.TYPE_4BYTE_ABGR) {
             throw new IllegalArgumentException();
         }
         
@@ -117,13 +120,13 @@ public abstract class SpaceObject{
         boolean[][] returnAr = new boolean[height][width];
         
         for (int i = 0; i < height; i++) {
-            for (int j = 0; i < width; j++) {
+            for (int j = 0; j < width; j++) {
                 int alpha = (image.getRGB(j, i) >> 24) & 0x000000FF;
                 if (alpha == 0) { returnAr[i][j] = false; } 
                 else { returnAr[i][j] = true; }
             }
         }
-        return returnAr; //TODO
+        return returnAr;
         
     }
 }
