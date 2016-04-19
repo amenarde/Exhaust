@@ -27,14 +27,6 @@ public abstract class SpaceObject{
     private boolean[][] shape;
     private BufferedImage image;
     
-    public int getLeftX() {return leftX;}
-    public int getRightX() {return rightX;}
-    public int getUpperY() {return upperY;}
-    public int getLowerY() {return lowerY;}
-    public boolean[][] getShape() {return shape;}
-    public int getCenterX() {return centerX;}
-    public int getCenterY() {return centerY;}
-    
     public SpaceObject(int leftX, int upperY, String filename){
         if (leftX < 0 || upperY < 0 || filename == null) {
             throw new IllegalArgumentException();
@@ -57,16 +49,58 @@ public abstract class SpaceObject{
     }
     
     public boolean intersects(SpaceObject obj){
+        //completely inside
         if (this.leftX <= obj.getLeftX() && this.rightX >= obj.getRightX() && 
             this.upperY >= obj.getUpperY() && this.lowerY <= obj.getLowerY()) {
             return true;
         }
+        //completely outside
         else if (obj.getLeftX() <= this.leftX && obj.getRightX() >= this.rightX && 
                 obj.getUpperY() >= this.upperY && obj.getLowerY() <= this.lowerY) {
            return true;
         }
-        else if ((this.upperY <= obj.getUpperY() || this.lowerY >= obj.getLowerY()) &&
-                 (this.leftX >= obj.getRightX() || this.rightX >= obj.getRightX())){ 
+        //not intersecting at all
+        else if (this.upperY < obj.getLowerY() || this.lowerY > obj.getUpperY() ||
+                 this.rightX < obj.getLeftX()  || this.leftX > obj.getRightX()) {
+            return false;
+        }
+        //evaluate intersection
+//        else if ((this.upperY <= obj.getUpperY() || this.lowerY >= obj.getLowerY()) &&
+//                 (this.leftX >= obj.getRightX() || this.rightX <= obj.getRightX())){ 
+//            int myi, myj, obji, objj, irange, jrange;
+//            if (this.upperY > obj.getUpperY()) {
+//                myi = this.upperY - obj.getUpperY();
+//                obji = 0;
+//                irange = obj.getUpperY() - this.lowerY;
+//            } else {
+//                myi = 0;
+//                obji = obj.getUpperY() - this.upperY;
+//                irange = this.upperY - obj.getLowerY();
+//            }
+//            
+//            if (this.leftX > obj.getLeftX()) {
+//                myj = 0;
+//                objj = this.leftX - obj.getLeftX();
+//                jrange = obj.getRightX() - this.lowerY;
+//            } else {
+//                myj = obj.getLeftX() - this.leftX;
+//                objj = 0;
+//                jrange = this.rightX - obj.getLowerY();
+//            }
+//            
+//            boolean[][] objShape = obj.getShape();
+//            
+//            for (int i = 0; i < irange; i++) {
+//                for (int j = 0; j < jrange; j++) {
+//                    if (shape[i + myi][j + myj] && objShape[i + obji][j + objj]) {
+//                        return true;
+//                    }
+//                }
+//            }
+//            System.out.println("TWO");
+//            return false;
+//        }
+        else {
             int myi, myj, obji, objj, irange, jrange;
             if (this.upperY > obj.getUpperY()) {
                 myi = this.upperY - obj.getUpperY();
@@ -92,23 +126,31 @@ public abstract class SpaceObject{
             
             for (int i = 0; i < irange; i++) {
                 for (int j = 0; j < jrange; j++) {
-                    System.out.println("i " + i + " myi " + myi + " obji " + obji);
-                    System.out.println("j " + j + " myj " + myj + " objj " + objj + "\n");
                     if (shape[i + myi][j + myj] && objShape[i + obji][j + objj]) {
                         return true;
                     }
                 }
             }
+            System.out.println("TWO");
             return false;
-        }
-        else {
-            return false;
+            
+//            System.out.println(this.leftX + "LX " + this.rightX + "RX | O " + obj.getLeftX() + "LX " + obj.getRightX() + "RX");
+//            System.out.println(this.lowerY + "LY " + this.upperY + "UY | O" + obj.getLowerY() + "LY " + obj.getUpperY() + "UY\n");
+//            return false;
         }
     }
     
     public void draw(Graphics g) {
-        g.drawImage(image, leftX, upperY, width, height, null);
+        g.drawImage(image, leftX, GameCourt.COURT_HEIGHT - upperY, width, height, null);
     }
+    
+    public int getLeftX() {return leftX;}
+    public int getRightX() {return rightX;}
+    public int getUpperY() {return upperY;}
+    public int getLowerY() {return lowerY;}
+    public boolean[][] getShape() {return shape;}
+    public int getCenterX() {return centerX;}
+    public int getCenterY() {return centerY;}
     
     public static boolean[][] imgToBool(BufferedImage image) {
         if (image.getType() != BufferedImage.TYPE_4BYTE_ABGR) {

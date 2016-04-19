@@ -29,10 +29,10 @@ public class GameCourt extends JPanel {
 
 	// Game constants
 	public static final int COURT_WIDTH = 1000;
-	public static final int COURT_HEIGHT = 1000;
+	public static final int COURT_HEIGHT = 500;
 	public static final int SQUARE_VELOCITY = 4;
 	// Update interval for timer, in milliseconds
-	public static final int INTERVAL = 100;
+	public static final int INTERVAL = 35;
 
 	public GameCourt(JLabel status) {
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -53,9 +53,9 @@ public class GameCourt extends JPanel {
 				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 				    ship.force(effect, 0); }
 				else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				    ship.force(0, effect); }
-				else if (e.getKeyCode() == KeyEvent.VK_UP) {
 				    ship.force(0, -effect); }
+				else if (e.getKeyCode() == KeyEvent.VK_UP) {
+				    ship.force(0, effect); }
 			}
 
 			public void keyReleased(KeyEvent e) {
