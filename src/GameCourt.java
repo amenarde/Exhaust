@@ -143,20 +143,21 @@ public class GameCourt extends JPanel {
 	    body.force(xForce, yForce);
 	}
 	
-	private void wallGravity (SpaceShip body) {
-	    double GravityCoef = 1000;
-	    
-	    double xForce = 0; double yForce = 0;
-	    int distance = body.getCenterX();
-	    xForce += ((double)GravityCoef / Math.pow(distance, 3));
-	    xForce -= ((double)GravityCoef / Math.pow(COURT_WIDTH - distance, 3));
-	    
-	    distance = body.getCenterY();
-        yForce += ((double)GravityCoef / Math.pow(distance, 3));
-        yForce -= ((double)GravityCoef / Math.pow(COURT_HEIGHT - distance, 3));
-        
-        body.force(xForce, yForce);
-	}
+//TODO: Better Wall System	
+//	private void wallGravity (SpaceShip body) {
+//	    double GravityCoef = 1000;
+//	    
+//	    double xForce = 0; double yForce = 0;
+//	    int distance = body.getCenterX();
+//	    xForce += ((double)GravityCoef / Math.pow(distance, 3));
+//	    xForce -= ((double)GravityCoef / Math.pow(COURT_WIDTH - distance, 3));
+//	    
+//	    distance = body.getCenterY();
+//        yForce += ((double)GravityCoef / Math.pow(distance, 3));
+//        yForce -= ((double)GravityCoef / Math.pow(COURT_HEIGHT - distance, 3));
+//        
+//        body.force(xForce, yForce);
+//	}
 
 	@Override
 	public void paintComponent(Graphics g) {
