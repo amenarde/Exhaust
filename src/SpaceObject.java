@@ -7,7 +7,6 @@
  *         (c) University of Pennsylvania
  */
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,9 +14,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public abstract class SpaceObject{
+public class SpaceObject implements Comparable<SpaceObject>{
     
     //specified by upper left corner
+    private String filename;
     protected int leftX, rightX;
     protected int upperY, lowerY;
     private int width;
@@ -39,6 +39,7 @@ public abstract class SpaceObject{
             throw new Error();
         }
         
+        this.filename = filename;
         this.shape = imgToBool(image);
         this.height = shape.length;
         this.width = shape[0].length;
@@ -110,6 +111,9 @@ public abstract class SpaceObject{
     public boolean[][] getShape() {return shape;}
     public int getCenterX() {return centerX;}
     public int getCenterY() {return centerY;}
+    public int getWidth() {return width;}
+    public int getHeight() {return height;}
+    public String getFilename() {return new String(this.filename);}
     
     public static boolean[][] imgToBool(BufferedImage image) {
         if (image.getType() != BufferedImage.TYPE_4BYTE_ABGR) {
@@ -129,5 +133,26 @@ public abstract class SpaceObject{
         }
         return returnAr;
         
+    }
+    
+    @Override
+    //used only for treeset sorting
+    public int compareTo (SpaceObject obj) {
+        if (filename.equals(obj.getFilename())) {
+            if (this.upperY == obj.getUpperY()) {
+                if (this.rightX == obj.getRightX()) {
+                    return 0;
+                }
+                else {
+                    return this.rightX - obj.getRightX();
+                }
+            }
+            else {
+                return this.upperY - obj.getUpperY();
+            }
+        }
+        else {
+            return this.filename.compareTo(obj.getFilename());
+        }
     }
 }

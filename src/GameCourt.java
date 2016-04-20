@@ -6,6 +6,9 @@
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Set;
+import java.util.TreeSet;
+
 import javax.swing.*;
 
 
@@ -22,20 +25,24 @@ public class GameCourt extends JPanel {
 
 	// the state of the game logic
 	private SpaceShip ship;
-	private Celestial planet;
+	private Set<Celestial> planets;
+	private Set<SpaceObject> stations;
 
 	public boolean playing = false; // whether the game is running
 	private JLabel status; // Current status text (i.e. Running...)
 
 	// Game constants
-	public static final int COURT_WIDTH = 1000;
-	public static final int COURT_HEIGHT = 500;
-	public static final int SQUARE_VELOCITY = 4;
+	public static final int COURT_WIDTH = 900;
+	public static final int COURT_HEIGHT = 600;
 	// Update interval for timer, in milliseconds
 	public static final int INTERVAL = 35;
 
 	public GameCourt(JLabel status) {
-		setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	    super();
+        this.setOpaque(true);
+        this.setBackground(Color.BLACK);
+	    
+	    setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		Timer timer = new Timer(INTERVAL, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -45,7 +52,7 @@ public class GameCourt extends JPanel {
 		timer.start(); 
 		setFocusable(true);
 
-		int effect = 5;
+		int effect = 2;
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -69,8 +76,16 @@ public class GameCourt extends JPanel {
 	public void reset() {
 
 		ship = new SpaceShip(100, 100);
-		planet = new Celestial(200, 200, 0);
+		planets = new TreeSet<>();
+		//planets.add(new Celestial(200, 200, "earthlike.png", true));
+		//planets.add(new Celestial(300, 300, "earthlike.png", true));
+		//planets.add(new Celestial(800, 300, "earthlike.png", true));
+		//planets.add(new Celestial(650, 250, "balloffire.png", false));
+		//planets.add(new Celestial(650, 350, "rocky.png", true));
+		planets.add(new Celestial(650, 350, "gasgiant.png", true));
 		
+		stations = new TreeSet<>();
+		stations.add(new SpaceObject(800, 500, "station.png"));
 
 		playing = true;
 		status.setText("Running...");
@@ -85,25 +100,39 @@ public class GameCourt extends JPanel {
 	 */
 	void tick() {
 		if (playing) {
-			gravity(ship, planet);
+			
+		    for (Celestial c : planets) {
+		        gravity(ship, c);
+		    }
+		    //wallGravity(ship);
+		    
 			ship.move();
 			
 			repaint();
 			
-			if (ship.intersects(planet)) {
-			    playing = false;
-                status.setText("You lose!");
-			}
+			for (Celestial c : planets) {
+			    if (ship.intersects(c)) {
+	                playing = false;
+	                status.setText("You lose!");
+	            }
+            }
+			
+			for (SpaceObject s : stations) {
+                if (ship.intersects(s)) {
+                    playing = false;
+                    status.setText("You Win!");
+                }
+            }
 		}
 	}
 	
-	private void gravity (SpaceShip body, Celestial planet) {
+	public static void gravity (SpaceShip body, Celestial planet) {
 	    
 	    int distance = (int)(Math.sqrt(Math.pow(body.getCenterX() - planet.getCenterX(), 2) +
 	                                   Math.pow(body.getCenterY() - planet.getCenterY(), 2)));
 	    
-	    int xForce = (int)((double)planet.getGravity() / Math.pow(distance, 0.75));
-	    int yForce = (int)((double)planet.getGravity() / Math.pow(distance, 0.75));
+	    double xForce = ((double)planet.getGravity() / Math.pow(distance, 2));
+	    double yForce = ((double)planet.getGravity() / Math.pow(distance, 2));
 	    if (body.getCenterX() - planet.getCenterX() >= 0) {
 	        xForce = -xForce;
 	    }
@@ -113,12 +142,32 @@ public class GameCourt extends JPanel {
 	    
 	    body.force(xForce, yForce);
 	}
+	
+	private void wallGravity (SpaceShip body) {
+	    double GravityCoef = 1000;
+	    
+	    double xForce = 0; double yForce = 0;
+	    int distance = body.getCenterX();
+	    xForce += ((double)GravityCoef / Math.pow(distance, 3));
+	    xForce -= ((double)GravityCoef / Math.pow(COURT_WIDTH - distance, 3));
+	    
+	    distance = body.getCenterY();
+        yForce += ((double)GravityCoef / Math.pow(distance, 3));
+        yForce -= ((double)GravityCoef / Math.pow(COURT_HEIGHT - distance, 3));
+        
+        body.force(xForce, yForce);
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 	    super.paintComponent(g);
 		ship.draw(g);
-		planet.draw(g);
+		for (Celestial c : planets) {
+		    c.draw(g); 
+		}
+		for (SpaceObject s : stations) {
+            s.draw(g); 
+        }
 	}
 
 	@Override

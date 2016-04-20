@@ -1,8 +1,8 @@
 
 public interface MoveableObject {
     public void move();
-    public int getXVelocity();
-    public int getYVelocity();
-    public void force(int x, int y);
+    public double getXVelocity();
+    public double getYVelocity();
+    public void force(double x, double y);
     public void stop();
 }
