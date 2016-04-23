@@ -13,16 +13,11 @@ import javax.swing.*;
  * Game Main class that specifies the frame and widgets of the GUI
  */
 public class Game implements Runnable {
-	public void run() {
+    
+    public void run() {
 		
 		final JFrame frame = new JFrame("TOP LEVEL FRAME");
 		frame.setLocation(0, 0);
-
-		// Status panel
-		final JPanel status_panel = new JPanel();
-		frame.add(status_panel, BorderLayout.SOUTH);
-		final JLabel status = new JLabel("Running...");
-		status_panel.add(status);
 		
 		//Side Panel
 		final JPanel side_panel = new JPanel();
@@ -30,10 +25,10 @@ public class Game implements Runnable {
 	    frame.add(side_panel, BorderLayout.WEST);
 		
 	    //title
-	    int index = 30;
+	    int index = 45;
 	    final JLabel title = new JLabel(new String(UserText.TITLE_TEXT.getText()));
-		title.setPreferredSize(new Dimension(200, 30));
-		title.setFont(new Font("Sans Serif", Font.PLAIN, 15));
+		title.setPreferredSize(new Dimension(200, index));
+		title.setFont(new Font("Orator Std", Font.PLAIN, 30));
 	    side_panel.add(title, BorderLayout.NORTH);
 	    //
 	    final JPanel p1 = new JPanel();
@@ -43,7 +38,7 @@ public class Game implements Runnable {
 	    //level number
 	    final JLabel level = new JLabel("INSTRUCTIONS");
         level.setPreferredSize(new Dimension(200, 30));
-        level.setFont(new Font("Serif", Font.PLAIN, 12));
+        level.setFont(new Font("Serif", Font.PLAIN, 14));
         p1.add(level, BorderLayout.NORTH);
         index += 30;
         
@@ -52,28 +47,33 @@ public class Game implements Runnable {
         description.setPreferredSize(new Dimension(200, 200));
         description.setFont(new Font("Sans Serif", Font.PLAIN, 12));
         p1.add(description, BorderLayout.SOUTH);
-		
-		// Main playing area
-		final GameCourt court = new GameCourt(status);
-		frame.add(court, BorderLayout.CENTER);
-		frame.setBackground(Color.BLACK);
 
 		// Reset button
 		final JPanel control_panel = new JPanel();
 		frame.add(control_panel, BorderLayout.NORTH);
+		final JLabel status = new JLabel("Running...");
+		final JLabel fuel = new JLabel("");
+        
+        // Main playing area
+        final GameCourt court = new GameCourt(status, level, fuel);
+        frame.add(court, BorderLayout.CENTER);
+        frame.setBackground(Color.BLACK);
 
 		// Note here that when we add an action listener to the reset
 		// button, we define it as an anonymous inner class that is
 		// an instance of ActionListener with its actionPerformed()
 		// method overridden. When the button is pressed,
 		// actionPerformed() will be called.
-		final JButton reset = new JButton("Reset");
+		final JButton reset = new JButton("PLAY");
 		reset.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				court.reset();
 			}
 		});
+		
 		control_panel.add(reset);
+		control_panel.add(fuel);
+        control_panel.add(status);
 
 		// Put the frame on the screen
 		frame.pack();
@@ -82,6 +82,9 @@ public class Game implements Runnable {
 
 		// Start game
 		court.reset();
+		court.playing = false;
+		status.setText("");
+		level.setText("INSTRUCTIONS");
 	}
 
 	/*

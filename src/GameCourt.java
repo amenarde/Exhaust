@@ -27,17 +27,20 @@ public class GameCourt extends JPanel {
 	private SpaceShip ship;
 	private Set<Celestial> planets;
 	private Set<SpaceObject> stations;
+	private int fuelLeft;
+	private int levelNumber;
 
 	public boolean playing = false; // whether the game is running
 	private JLabel status; // Current status text (i.e. Running...)
+	private JLabel level;
+	private JLabel fuel;
 
 	// Game constants
 	public static final int COURT_WIDTH = 900;
 	public static final int COURT_HEIGHT = 600;
-	// Update interval for timer, in milliseconds
-	public static final int INTERVAL = 35;
+	public static final int INTERVAL = 35; // Update interval for timer, in milliseconds
 
-	public GameCourt(JLabel status) {
+	public GameCourt(JLabel status, JLabel level, JLabel fuel) {
 	    super();
         this.setOpaque(true);
         this.setBackground(Color.BLACK);
@@ -55,14 +58,14 @@ public class GameCourt extends JPanel {
 		int effect = 2;
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-				    ship.force(-effect, 0); }
-				else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-				    ship.force(effect, 0); }
-				else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-				    ship.force(0, -effect); }
-				else if (e.getKeyCode() == KeyEvent.VK_UP) {
-				    ship.force(0, effect); }
+				if (e.getKeyCode() == KeyEvent.VK_LEFT && fuelLeft > 0) {
+				    ship.force(-effect, 0); fuelLeft--; }
+				else if (e.getKeyCode() == KeyEvent.VK_RIGHT && fuelLeft > 0) {
+				    ship.force(effect, 0); fuelLeft--; }
+				else if (e.getKeyCode() == KeyEvent.VK_DOWN && fuelLeft > 0) {
+				    ship.force(0, -effect); fuelLeft--; }
+				else if (e.getKeyCode() == KeyEvent.VK_UP && fuelLeft > 0) {
+				    ship.force(0, effect); fuelLeft--; }
 			}
 
 			public void keyReleased(KeyEvent e) {
@@ -71,27 +74,50 @@ public class GameCourt extends JPanel {
 		});
 
 		this.status = status;
+		this.level = level;
+		this.fuel = fuel;
 	}
 
+	private void buildLevel() {
+	    
+	    planets = new TreeSet<>();
+	    stations = new TreeSet<>();
+	            
+	    switch (levelNumber) {
+	    case 1: ship = new SpaceShip(100, 100);
+                planets.add(new Celestial(650, 350, "gasgiant.png", true));
+                stations.add(new SpaceObject(725, 425, "station.png"));
+                fuelLeft = 1;
+                fuel.setText("Fuel: " + fuelLeft);
+                level.setText("Level1");
+        break;
+	    case 2: ship = new SpaceShip(800, 100);
+                planets.add(new Celestial(200, 200, "earthlike.png", true));
+                planets.add(new Celestial(300, 300, "earthlike.png", true));
+                planets.add(new Celestial(800, 300, "earthlike.png", true));
+                planets.add(new Celestial(650, 250, "balloffire.png", false));
+                planets.add(new Celestial(650, 350, "rocky.png", true));
+                planets.add(new Celestial(650, 350, "gasgiant.png", true));
+                stations.add(new SpaceObject(800, 500, "station.png"));
+                fuelLeft = 3;
+                fuel.setText("Fuel: " + fuelLeft);
+                level.setText("Level2");
+        break;
+        default: playing = false;
+                 status.setText("You Win!");
+	    }
+	}
+	
+	
 	public void reset() {
 
-		ship = new SpaceShip(100, 100);
-		planets = new TreeSet<>();
-		//planets.add(new Celestial(200, 200, "earthlike.png", true));
-		//planets.add(new Celestial(300, 300, "earthlike.png", true));
-		//planets.add(new Celestial(800, 300, "earthlike.png", true));
-		//planets.add(new Celestial(650, 250, "balloffire.png", false));
-		//planets.add(new Celestial(650, 350, "rocky.png", true));
-		planets.add(new Celestial(650, 350, "gasgiant.png", true));
-		
-		stations = new TreeSet<>();
-		stations.add(new SpaceObject(800, 500, "station.png"));
-
-		playing = true;
+		levelNumber = 1;
+		buildLevel();
+	    
+	    playing = true;
 		status.setText("Running...");
 
-		// Make sure that this component has the keyboard focus
-		requestFocusInWindow();
+		requestFocusInWindow(); // Make sure that this component has the keyboard focus
 	}
 
 	/**
@@ -104,7 +130,6 @@ public class GameCourt extends JPanel {
 		    for (Celestial c : planets) {
 		        gravity(ship, c);
 		    }
-		    //wallGravity(ship);
 		    
 			ship.move();
 			
@@ -119,20 +144,26 @@ public class GameCourt extends JPanel {
 			
 			for (SpaceObject s : stations) {
                 if (ship.intersects(s)) {
-                    playing = false;
-                    status.setText("You Win!");
+                    levelNumber++;
+                    buildLevel();
+                    repaint();
                 }
             }
+			
+			fuel.setText("Fuel: " + fuelLeft);
 		}
 	}
 	
 	public static void gravity (SpaceShip body, Celestial planet) {
 	    
-	    int distance = (int)(Math.sqrt(Math.pow(body.getCenterX() - planet.getCenterX(), 2) +
-	                                   Math.pow(body.getCenterY() - planet.getCenterY(), 2)));
+	    int xDistance = Math.abs(body.getCenterX() - planet.getCenterX());
+	    int yDistance = Math.abs(body.getCenterY() - planet.getCenterY());
+	    int distance = (int)(Math.sqrt(Math.pow(xDistance, 2) +
+	                                   Math.pow(yDistance, 2)));
+	    double force = ((double)planet.getGravity() / Math.pow(distance, 2));
+	    double xForce = force * (xDistance) / (xDistance + yDistance);
+	    double yForce = force * (yDistance) / (xDistance + yDistance);
 	    
-	    double xForce = ((double)planet.getGravity() / Math.pow(distance, 2));
-	    double yForce = ((double)planet.getGravity() / Math.pow(distance, 2));
 	    if (body.getCenterX() - planet.getCenterX() >= 0) {
 	        xForce = -xForce;
 	    }
@@ -143,21 +174,8 @@ public class GameCourt extends JPanel {
 	    body.force(xForce, yForce);
 	}
 	
-//TODO: Better Wall System	
-//	private void wallGravity (SpaceShip body) {
-//	    double GravityCoef = 1000;
-//	    
-//	    double xForce = 0; double yForce = 0;
-//	    int distance = body.getCenterX();
-//	    xForce += ((double)GravityCoef / Math.pow(distance, 3));
-//	    xForce -= ((double)GravityCoef / Math.pow(COURT_WIDTH - distance, 3));
-//	    
-//	    distance = body.getCenterY();
-//        yForce += ((double)GravityCoef / Math.pow(distance, 3));
-//        yForce -= ((double)GravityCoef / Math.pow(COURT_HEIGHT - distance, 3));
-//        
-//        body.force(xForce, yForce);
-//	}
+//TODO: Solve Wall Problem
+
 
 	@Override
 	public void paintComponent(Graphics g) {

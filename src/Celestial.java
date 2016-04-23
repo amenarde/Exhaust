@@ -1,7 +1,7 @@
 
 public class Celestial extends SpaceObject{
     
-    public static final double GRAVITY_COEF = 0.042;
+    public static final double GRAVITY_COEF = 0.2;
     private double gravity;
     
     public Celestial (int leftX, int upperY, String filename, boolean positiveGravity) {

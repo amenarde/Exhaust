@@ -10,26 +10,44 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
     
     public void move () {
         
+        super.leftX += (int)velocityX;
+        super.rightX += (int)velocityX;
+        super.lowerY += (int)velocityY;
+        super.upperY += (int)velocityY;
+        
         int extramoveX = 0;
-        if (Math.random() < Math.abs(velocityX - (int)velocityX)) {
-            extramoveX = 1;
-            if (velocityX < 0) {
-                extramoveX = -extramoveX;
-            }
-        }
-        
         int extramoveY = 0;
-        if (Math.random() < Math.abs(velocityY - (int)velocityY)) {
-            extramoveY = 1;
-            if (velocityY < 0) {
-                extramoveY = -extramoveY;
-            }
+        
+        
+        
+//      double chance = Math.pow(Math.pow(Math.abs(velocityX - (int)velocityX), 2) + Math.pow(Math.abs(velocityY - (int)velocityY), 2), 0.5);
+//      if (Math.random() < chance) {   
+//          if (Math.abs(velocityX) > Math.abs(velocityY)) { extramoveX = (int)(velocityX / velocityY); extramoveY = 1; }
+//          else { extramoveY = (int)(velocityX / velocityY); extramoveX = 1; }
+//          
+//          if (velocityX < 0) { extramoveX -= 2*extramoveX; } else if (velocityX == 0) {} else { extramoveX++; }
+//          if (velocityY < 0) { extramoveY -= 2*extramoveY; } else if (velocityY == 0) {} else { extramoveY++; }
+//      }
+      
+
+        
+        if (Math.random() < Math.abs(velocityX) - Math.abs((int)velocityX)) {
+            extramoveX = 1;
+            if (velocityX < 0) { extramoveX = -extramoveX; }
+            //else { velocityX += extramoveX; }
         }
         
-        super.leftX += (int)velocityX + extramoveX;
-        super.rightX += (int)velocityX + extramoveX;
-        super.lowerY += (int)velocityY + extramoveY;
-        super.upperY += (int)velocityY + extramoveY;
+        
+        if (Math.random() < Math.abs(velocityY) - Math.abs((int)velocityY)) {
+            extramoveY = 1;
+            if (velocityY < 0) { extramoveY = -extramoveY; }
+            //else { velocityY += extramoveY; }
+        }
+        
+        super.leftX += extramoveX;
+        super.rightX += extramoveX;
+        super.lowerY += extramoveY;
+        super.upperY += extramoveY;
         
         super.leftX = constrain(super.leftX, 0, GameCourt.COURT_WIDTH - super.getWidth());
         super.rightX = constrain(super.rightX, super.getWidth(), GameCourt.COURT_WIDTH);
