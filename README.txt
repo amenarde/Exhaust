@@ -28,9 +28,8 @@ Collections: Collections are used to effectively and efficiently check for inter
 __________________________________________________________________
 
 Bibliography: 
- CIS 120 Game HW
- University of Pennsylvania
- @version 2.0, Mar 2013
+
+ Fundamental game structure inspired by CIS 120 HW 9 Sample Code
 
  Stack Overflow Question Numbers:
  (Used only for Swing nuances, not “Core Concepts”)
@@ -41,6 +40,8 @@ Bibliography:
  3342651
  18871150
  1097366
+ 
+ Patrick Taggart (PNG file handling)
 
  Gameplay and some visual resources inspired by:
  Faster than Light

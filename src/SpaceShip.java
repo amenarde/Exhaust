@@ -1,3 +1,8 @@
+/**
+ * Exhaust
+ * (c) Antonio Menarde
+ * @version 1.0, Apr 2016
+ */
 
 public class SpaceShip extends SpaceObject implements MoveableObject{
         private static String filename = "swordfish.png";
@@ -64,13 +69,6 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
     public void force (double dx, double dy) {
         velocityX += dx;
         velocityY += dy;
-        
-//        int maxv = 30;
-//        
-//        if (velocityX > maxv) { velocityX = maxv; }
-//        if (velocityX < -maxv) {velocityX = -maxv; }
-//        if (velocityY > maxv) { velocityY = maxv; }
-//        if (velocityY < -maxv) {velocityY = -maxv; }
     }
     
     public void stop() {

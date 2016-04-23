@@ -1,13 +1,12 @@
 /**
- * CIS 120 Game HW
- * (c) University of Pennsylvania
- * @version 2.0, Mar 2013
+ * Exhaust
+ * (c) Antonio Menarde
+ * @version 1.0, Apr 2016
  */
 
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -47,9 +46,9 @@ public class Game implements Runnable {
         BufferedImage outro = null;
         BufferedImage win = null;
         try {
-            intro = ImageIO.read(new File("intro.png"));
-            outro = ImageIO.read(new File("end.png"));
-            win = ImageIO.read(new File("win.png"));
+            intro = ImageIO.read(this.getClass().getResource("intro.png"));
+            outro = ImageIO.read(this.getClass().getResource("end.png"));
+            win = ImageIO.read(this.getClass().getResource("win.png"));
         } catch (IOException e) {
             System.out.println("Internal Error:" + e.getMessage());
         }
@@ -81,8 +80,6 @@ public class Game implements Runnable {
             public void actionPerformed(ActionEvent e) {
                 if (gameLost) {
                     gameLost = false;
-                    
-                    System.out.println("Here1");
                     frame.remove(outroScreen);
                     frame.revalidate();
                     frame.add(court, BorderLayout.CENTER);
@@ -92,13 +89,11 @@ public class Game implements Runnable {
                     frame.setVisible(true);
                 }
                 else if (court.getLevelNumber() != 1) {
-                    System.out.println("Here2");
                     court.playing = true;
                     court.requestFocusInWindow();
                     status.setText("");
                 }
                 else {
-                    System.out.println("Here3");
                     frame.remove(introScreen);
                     frame.setVisible(true);
                     court.reset();
@@ -154,11 +149,7 @@ public class Game implements Runnable {
         frame.setVisible(true);
     }
 
-	/*
-	 * Main method run to start and run the game Initializes the GUI elements
-	 * specified in Game and runs it IMPORTANT: Do NOT delete! You MUST include
-	 * this in the final submission of your game.
-	 */
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Game());
 	}

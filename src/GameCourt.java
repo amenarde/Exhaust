@@ -1,7 +1,7 @@
 /**
- * CIS 120 Game HW
- * (c) University of Pennsylvania
- * @version 2.0, Mar 2013
+ * Exhaust
+ * (c) Antonio Menarde
+ * @version 1.0, Apr 2016
  */
 
 import java.awt.*;

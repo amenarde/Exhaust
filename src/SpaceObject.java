@@ -1,15 +1,11 @@
 /**
- * Antonio Menarde
- * Space @version 0.1, 
- * 
- * Credit: Base Structure
- *         CIS 120 Game HW
- *         (c) University of Pennsylvania
+ * Exhaust
+ * (c) Antonio Menarde
+ * @version 1.0, Apr 2016
  */
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -33,7 +29,7 @@ public class SpaceObject implements Comparable<SpaceObject>{
         }
         
         try {
-            this.image = ImageIO.read(new File(filename));
+            this.image = ImageIO.read(this.getClass().getResource(filename));
         } catch (IOException e) {
             System.out.println("Internal Error:" + e.getMessage());
             throw new Error();
