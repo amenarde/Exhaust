@@ -17,10 +17,12 @@ public class GameCourt extends JPanel {
 
 	// the state of the game logic
 	private SpaceShip ship;
+	private SpaceObject egg;
 	private Set<Celestial> planets;
 	private Set<SpaceObject> stations;
 	private int fuelLeft;
 	private int levelNumber;
+	private boolean easterEgg = false;
 
 	public boolean playing = false; // whether the game is running
 	private JLabel status;          // Current status text (i.e. Running...)
@@ -59,6 +61,9 @@ public class GameCourt extends JPanel {
 				    ship.force(0, -effect); fuelLeft--; }
 				else if (e.getKeyCode() == KeyEvent.VK_UP && fuelLeft > 0) {
 				    ship.force(0, effect); fuelLeft--; }
+				else if (e.getKeyCode() == KeyEvent.VK_E) {
+				    easterEgg = !easterEgg;
+				}
 			}
 
 			public void keyReleased(KeyEvent e) {
@@ -75,6 +80,7 @@ public class GameCourt extends JPanel {
 	    
 	    planets = new TreeSet<>();
 	    stations = new TreeSet<>();
+	    egg = new SpaceObject(100, 500, "egg.png");
 	            
 	    switch (levelNumber) {
 	    case 1: ship = new SpaceShip(100, 100);
@@ -97,10 +103,10 @@ public class GameCourt extends JPanel {
                 fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level2");
                 playing = false;
-                status.setText("Press to begin playing ");
+                status.setText(" | Press to begin playing ");
         break;
         default: playing = false;
-                 status.setText("You Win!");
+                 game.win();
 	    }
 	}
 	
@@ -157,7 +163,7 @@ public class GameCourt extends JPanel {
                 }
             }
 			
-			fuel.setText("Fuel: " + fuelLeft);
+			fuel.setText("Fuel: " + fuelLeft + " | ");
 		}
 	}
 	
@@ -192,6 +198,10 @@ public class GameCourt extends JPanel {
 		for (SpaceObject s : stations) {
             s.draw(g); 
         }
+		
+		if (easterEgg) {
+		    egg.draw(g);
+		}
 	}
 	
 	public int getLevelNumber() {

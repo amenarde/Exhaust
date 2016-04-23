@@ -34,6 +34,7 @@ public class Game implements Runnable {
     //intro and outro screens
     private final JLabel introScreen;
     private final JLabel outroScreen;
+    private final JLabel winScreen;
     
     public Game() {
         gameLost = false;
@@ -47,9 +48,11 @@ public class Game implements Runnable {
         
         BufferedImage intro = null;
         BufferedImage outro = null;
+        BufferedImage win = null;
         try {
             intro = ImageIO.read(new File("intro.png"));
             outro = ImageIO.read(new File("end.png"));
+            win = ImageIO.read(new File("win.png"));
         } catch (IOException e) {
             System.out.println("Internal Error:" + e.getMessage());
         }
@@ -57,10 +60,12 @@ public class Game implements Runnable {
         if (intro == null && outro == null) {
             introScreen = new JLabel();
             outroScreen = new JLabel();
+            winScreen = new JLabel();
         }
         else {
             introScreen = new JLabel(new ImageIcon(intro));
             outroScreen = new JLabel(new ImageIcon(outro));
+            winScreen = new JLabel(new ImageIcon(win));
         }
     }
     
@@ -131,12 +136,22 @@ public class Game implements Runnable {
 	}
     
     public void lose() {
-        System.out.println("Lost");
         court.reset();
         court.playing = false;
         frame.remove(court);
         frame.revalidate();
         frame.add(outroScreen, BorderLayout.CENTER);
+        frame.repaint();
+        gameLost = true;
+        frame.setVisible(true);
+    }
+    
+    public void win() {
+        court.reset();
+        court.playing = false;
+        frame.remove(court);
+        frame.revalidate();
+        frame.add(winScreen, BorderLayout.CENTER);
         frame.repaint();
         gameLost = true;
         frame.setVisible(true);
