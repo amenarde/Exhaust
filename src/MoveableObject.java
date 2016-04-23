@@ -1,6 +1,6 @@
 
 public interface MoveableObject {
-    public void move();
+    public boolean move();
     public double getXVelocity();
     public double getYVelocity();
     public void force(double x, double y);

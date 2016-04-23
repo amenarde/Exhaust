@@ -8,7 +8,8 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
         super(leftX, upperY, filename);
     }
     
-    public void move () {
+    //moves piece and removes whether a wall conflict has occured.
+    public boolean move () {
         
         super.leftX += (int)velocityX;
         super.rightX += (int)velocityX;
@@ -17,31 +18,16 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
         
         int extramoveX = 0;
         int extramoveY = 0;
-        
-        
-        
-//      double chance = Math.pow(Math.pow(Math.abs(velocityX - (int)velocityX), 2) + Math.pow(Math.abs(velocityY - (int)velocityY), 2), 0.5);
-//      if (Math.random() < chance) {   
-//          if (Math.abs(velocityX) > Math.abs(velocityY)) { extramoveX = (int)(velocityX / velocityY); extramoveY = 1; }
-//          else { extramoveY = (int)(velocityX / velocityY); extramoveX = 1; }
-//          
-//          if (velocityX < 0) { extramoveX -= 2*extramoveX; } else if (velocityX == 0) {} else { extramoveX++; }
-//          if (velocityY < 0) { extramoveY -= 2*extramoveY; } else if (velocityY == 0) {} else { extramoveY++; }
-//      }
       
-
-        
         if (Math.random() < Math.abs(velocityX) - Math.abs((int)velocityX)) {
             extramoveX = 1;
             if (velocityX < 0) { extramoveX = -extramoveX; }
-            //else { velocityX += extramoveX; }
         }
         
         
         if (Math.random() < Math.abs(velocityY) - Math.abs((int)velocityY)) {
             extramoveY = 1;
             if (velocityY < 0) { extramoveY = -extramoveY; }
-            //else { velocityY += extramoveY; }
         }
         
         super.leftX += extramoveX;
@@ -56,6 +42,14 @@ public class SpaceShip extends SpaceObject implements MoveableObject{
         
         super.centerX = (int)(super.rightX - super.leftX)/2 + super.leftX;
         super.centerY = (int)(super.upperY - super.lowerY)/2 + super.lowerY;
+        
+        if (super.leftX == 0 || super.rightX == GameCourt.COURT_WIDTH || super.lowerY == 0 || super.upperY == GameCourt.COURT_HEIGHT) {
+            return true;
+        }
+        else{
+            return false;
+        }
+       
     }
     
     public static int constrain (int x, int a, int b) {

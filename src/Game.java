@@ -7,6 +7,11 @@
 // imports necessary libraries for Java swing
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -14,78 +19,128 @@ import javax.swing.*;
  */
 public class Game implements Runnable {
     
+    private static boolean gameLost;
+    
+    private final JFrame frame;
+    
+    //game resources
+    private final JPanel control_panel;
+    private final JLabel status;
+    private final JLabel fuel;
+    private final JLabel level;
+    //instance of game
+    private final GameCourt court;
+    
+    //intro and outro screens
+    private final JLabel introScreen;
+    private final JLabel outroScreen;
+    
+    public Game() {
+        gameLost = false;
+        frame = new JFrame("Exhaust");
+        control_panel = new JPanel();
+        status = new JLabel("");
+        fuel = new JLabel("");
+        level = new JLabel("");
+        
+        court = new GameCourt(status, level, fuel, this);
+        
+        BufferedImage intro = null;
+        BufferedImage outro = null;
+        try {
+            intro = ImageIO.read(new File("intro.png"));
+            outro = ImageIO.read(new File("end.png"));
+        } catch (IOException e) {
+            System.out.println("Internal Error:" + e.getMessage());
+        }
+        
+        if (intro == null && outro == null) {
+            introScreen = new JLabel();
+            outroScreen = new JLabel();
+        }
+        else {
+            introScreen = new JLabel(new ImageIcon(intro));
+            outroScreen = new JLabel(new ImageIcon(outro));
+        }
+    }
+    
+    
     public void run() {
-		
-		final JFrame frame = new JFrame("TOP LEVEL FRAME");
-		frame.setLocation(0, 0);
-		
-		//Side Panel
-		final JPanel side_panel = new JPanel();
-	    side_panel.setPreferredSize(new Dimension(200, 600));
-	    frame.add(side_panel, BorderLayout.WEST);
-		
-	    //title
-	    int index = 45;
-	    final JLabel title = new JLabel(new String(UserText.TITLE_TEXT.getText()));
-		title.setPreferredSize(new Dimension(200, index));
-		title.setFont(new Font("Orator Std", Font.PLAIN, 30));
-	    side_panel.add(title, BorderLayout.NORTH);
-	    //
-	    final JPanel p1 = new JPanel();
-        p1.setPreferredSize(new Dimension(200, 600 - index));
-        side_panel.add(p1, BorderLayout.SOUTH);
-	    
-	    //level number
-	    final JLabel level = new JLabel("INSTRUCTIONS");
-        level.setPreferredSize(new Dimension(200, 30));
-        level.setFont(new Font("Serif", Font.PLAIN, 14));
-        p1.add(level, BorderLayout.NORTH);
-        index += 30;
         
-        //description
-        final JLabel description = new JLabel(new String(UserText.INSTRUCTIONS.getText()), SwingConstants.CENTER);
-        description.setPreferredSize(new Dimension(200, 200));
-        description.setFont(new Font("Sans Serif", Font.PLAIN, 12));
-        p1.add(description, BorderLayout.SOUTH);
+		
+		frame.setLocation(100, 100);
 
-		// Reset button
-		final JPanel control_panel = new JPanel();
+		//Control Panel
 		frame.add(control_panel, BorderLayout.NORTH);
-		final JLabel status = new JLabel("Running...");
-		final JLabel fuel = new JLabel("");
+	    
+	    //Reset Button
+	    final JButton reset = new JButton("PLAY");
+        reset.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                if (gameLost) {
+                    gameLost = false;
+                    
+                    System.out.println("Here1");
+                    frame.remove(outroScreen);
+                    frame.revalidate();
+                    frame.add(court, BorderLayout.CENTER);
+                    frame.repaint();
+                    //frame.setBackground(Color.BLACK);
+                    court.reset();
+                    frame.setVisible(true);
+                }
+                else if (court.getLevelNumber() != 1) {
+                    System.out.println("Here2");
+                    court.playing = true;
+                    court.requestFocusInWindow();
+                    status.setText("");
+                }
+                else {
+                    System.out.println("Here3");
+                    frame.remove(introScreen);
+                    frame.setVisible(true);
+                    court.reset();
+                    status.setText("");
+                }
+            }
+        });
         
-        // Main playing area
-        final GameCourt court = new GameCourt(status, level, fuel);
+        //add to Control Panel
+	    control_panel.add(fuel);
+	    control_panel.add(reset);
+	    control_panel.add(status);
+	    control_panel.add(level);
+		
+		frame.add(introScreen, BorderLayout.CENTER);
+		// Put the frame on the screen
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        
+        
+		// Main playing area
         frame.add(court, BorderLayout.CENTER);
         frame.setBackground(Color.BLACK);
-
-		// Note here that when we add an action listener to the reset
-		// button, we define it as an anonymous inner class that is
-		// an instance of ActionListener with its actionPerformed()
-		// method overridden. When the button is pressed,
-		// actionPerformed() will be called.
-		final JButton reset = new JButton("PLAY");
-		reset.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				court.reset();
-			}
-		});
-		
-		control_panel.add(reset);
-		control_panel.add(fuel);
-        control_panel.add(status);
-
-		// Put the frame on the screen
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
 
 		// Start game
 		court.reset();
 		court.playing = false;
 		status.setText("");
-		level.setText("INSTRUCTIONS");
+		level.setText("");
+		fuel.setText("");
 	}
+    
+    public void lose() {
+        System.out.println("Lost");
+        court.reset();
+        court.playing = false;
+        frame.remove(court);
+        frame.revalidate();
+        frame.add(outroScreen, BorderLayout.CENTER);
+        frame.repaint();
+        gameLost = true;
+        frame.setVisible(true);
+    }
 
 	/*
 	 * Main method run to start and run the game Initializes the GUI elements

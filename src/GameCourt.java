@@ -12,14 +12,6 @@ import java.util.TreeSet;
 import javax.swing.*;
 
 
-/**
- * GameCourt
- * 
- * This class holds the primary game logic for how different objects interact
- * with one another. Take time to understand how the timer interacts with the
- * different methods and how it repaints the GUI on every tick().
- * 
- */
 @SuppressWarnings("serial")
 public class GameCourt extends JPanel {
 
@@ -31,20 +23,21 @@ public class GameCourt extends JPanel {
 	private int levelNumber;
 
 	public boolean playing = false; // whether the game is running
-	private JLabel status; // Current status text (i.e. Running...)
-	private JLabel level;
+	private JLabel status;          // Current status text (i.e. Running...)
 	private JLabel fuel;
+	private JLabel level;
+	private Game game;
 
 	// Game constants
 	public static final int COURT_WIDTH = 900;
 	public static final int COURT_HEIGHT = 600;
 	public static final int INTERVAL = 35; // Update interval for timer, in milliseconds
 
-	public GameCourt(JLabel status, JLabel level, JLabel fuel) {
+	public GameCourt(JLabel status, JLabel level, JLabel fuel, Game game) {
 	    super();
         this.setOpaque(true);
         this.setBackground(Color.BLACK);
-	    
+        this.game = game;
 	    setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		
 		Timer timer = new Timer(INTERVAL, new ActionListener() {
@@ -74,8 +67,8 @@ public class GameCourt extends JPanel {
 		});
 
 		this.status = status;
-		this.level = level;
 		this.fuel = fuel;
+		this.level = level;
 	}
 
 	private void buildLevel() {
@@ -87,9 +80,10 @@ public class GameCourt extends JPanel {
 	    case 1: ship = new SpaceShip(100, 100);
                 planets.add(new Celestial(650, 350, "gasgiant.png", true));
                 stations.add(new SpaceObject(725, 425, "station.png"));
-                fuelLeft = 1;
-                fuel.setText("Fuel: " + fuelLeft);
+                fuelLeft = 300;
+                fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level1");
+                
         break;
 	    case 2: ship = new SpaceShip(800, 100);
                 planets.add(new Celestial(200, 200, "earthlike.png", true));
@@ -99,9 +93,11 @@ public class GameCourt extends JPanel {
                 planets.add(new Celestial(650, 350, "rocky.png", true));
                 planets.add(new Celestial(650, 350, "gasgiant.png", true));
                 stations.add(new SpaceObject(800, 500, "station.png"));
-                fuelLeft = 3;
-                fuel.setText("Fuel: " + fuelLeft);
+                fuelLeft = 300;
+                fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level2");
+                playing = false;
+                status.setText("Press to begin playing ");
         break;
         default: playing = false;
                  status.setText("You Win!");
@@ -115,7 +111,7 @@ public class GameCourt extends JPanel {
 		buildLevel();
 	    
 	    playing = true;
-		status.setText("Running...");
+		status.setText("");
 
 		requestFocusInWindow(); // Make sure that this component has the keyboard focus
 	}
@@ -127,18 +123,29 @@ public class GameCourt extends JPanel {
 	void tick() {
 		if (playing) {
 			
+		    //gravity
 		    for (Celestial c : planets) {
 		        gravity(ship, c);
 		    }
 		    
-			ship.move();
+		    //move ship and check for wall conflicts
+		    if (ship.move()) {
+			    repaint();
+	            playing = false;
+                status.setText("");
+			    game.lose();
+			}
 			
+			//repaint
 			repaint();
 			
+			//check for intersections
 			for (Celestial c : planets) {
 			    if (ship.intersects(c)) {
 	                playing = false;
-	                status.setText("You lose!");
+	                repaint();
+	                status.setText("");
+	                game.lose();
 	            }
             }
 			
@@ -173,20 +180,22 @@ public class GameCourt extends JPanel {
 	    
 	    body.force(xForce, yForce);
 	}
-	
-//TODO: Solve Wall Problem
-
 
 	@Override
 	public void paintComponent(Graphics g) {
 	    super.paintComponent(g);
-		ship.draw(g);
+		
+	    ship.draw(g);
 		for (Celestial c : planets) {
 		    c.draw(g); 
 		}
 		for (SpaceObject s : stations) {
             s.draw(g); 
         }
+	}
+	
+	public int getLevelNumber() {
+	    return levelNumber;
 	}
 
 	@Override
