@@ -47,4 +47,4 @@ Bibliography:
  Faster than Light
  Cowboy Bebop
 
- Font User: Orator Std
+ Font Used: Orator Std
