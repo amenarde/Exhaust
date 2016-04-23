@@ -4,7 +4,6 @@
  * @version 2.0, Mar 2013
  */
 
-// imports necessary libraries for Java swing
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -14,9 +13,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-/**
- * Game Main class that specifies the frame and widgets of the GUI
- */
+
 public class Game implements Runnable {
     
     private static boolean gameLost;
