@@ -86,7 +86,7 @@ public class GameCourt extends JPanel {
 	    case 1: ship = new SpaceShip(100, 100);
                 planets.add(new Celestial(650, 350, "gasgiant.png", true));
                 stations.add(new SpaceObject(725, 425, "station.png"));
-                fuelLeft = 300;
+                fuelLeft = 1;
                 fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level1");
                 
@@ -99,7 +99,7 @@ public class GameCourt extends JPanel {
                 planets.add(new Celestial(650, 350, "rocky.png", true));
                 planets.add(new Celestial(650, 350, "gasgiant.png", true));
                 stations.add(new SpaceObject(800, 500, "station.png"));
-                fuelLeft = 300;
+                fuelLeft = 3;
                 fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level2");
                 playing = false;
