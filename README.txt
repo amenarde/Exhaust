@@ -40,8 +40,6 @@ Bibliography:
  3342651
  18871150
  1097366
- 
- Patrick Taggart (PNG file handling)
 
  Gameplay and some visual resources inspired by:
  Faster than Light

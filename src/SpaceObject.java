@@ -6,6 +6,7 @@
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
@@ -29,7 +30,7 @@ public class SpaceObject implements Comparable<SpaceObject>{
         }
         
         try {
-            this.image = ImageIO.read(this.getClass().getResource(filename));
+            this.image = ImageIO.read(new File("visual/" + filename));
         } catch (IOException e) {
             System.out.println("Internal Error:" + e.getMessage());
             throw new Error();
