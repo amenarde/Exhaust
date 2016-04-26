@@ -84,14 +84,37 @@ public class GameCourt extends JPanel {
 	            
 	    switch (levelNumber) {
 	    case 1: ship = new SpaceShip(100, 100);
+	    		planets.add(new Celestial(300, 500, "galaxy.png", false));
+	    		planets.add(new Celestial(250, 550, "gasgiant.png", true));
+	    		planets.add(new Celestial(100, 525, "gasgiant.png", true));
+	    		planets.add(new Celestial(175, 475, "gasgiant.png", true));
+	    		planets.add(new Celestial(400, 525, "earthlike.png", true));
+	    		planets.add(new Celestial(750, 550, "rocky.png", true));
+	    		planets.add(new Celestial(775, 510, "rocky.png", true));
+	    		planets.add(new Celestial(830, 485, "rocky.png", true));
+	    		planets.add(new Celestial(865, 450, "rocky.png", true));
+	    		planets.add(new Celestial(450, 100, "balloffire.png", false));
+	    		planets.add(new Celestial(850, 550, "gasgiant.png", false));
+	    		planets.add(new Celestial(850, 150, "rocky.png", true));
+	    		planets.add(new Celestial(750, 50, "rocky.png", true));
+	    		
+	    		stations.add(new SpaceObject(800, 75, "station.png"));
+	    		
+	    		fuelLeft = 500;
+                fuel.setText("Fuel: " + fuelLeft + " | ");
+                level.setText("Level 1");
+	    		
+	    break;
+	    
+	    case 2: ship = new SpaceShip(100, 100);
                 planets.add(new Celestial(650, 350, "gasgiant.png", true));
                 stations.add(new SpaceObject(725, 425, "station.png"));
                 fuelLeft = 1;
                 fuel.setText("Fuel: " + fuelLeft + " | ");
-                level.setText("Level1");
+                level.setText("Level 2");
                 
         break;
-	    case 2: ship = new SpaceShip(800, 100);
+	    case 3: ship = new SpaceShip(800, 100);
                 planets.add(new Celestial(200, 200, "earthlike.png", true));
                 planets.add(new Celestial(300, 300, "earthlike.png", true));
                 planets.add(new Celestial(800, 300, "earthlike.png", true));
@@ -101,7 +124,7 @@ public class GameCourt extends JPanel {
                 stations.add(new SpaceObject(800, 500, "station.png"));
                 fuelLeft = 3;
                 fuel.setText("Fuel: " + fuelLeft + " | ");
-                level.setText("Level2");
+                level.setText("Level 3");
                 playing = false;
                 status.setText(" | Press to begin playing ");
         break;
