@@ -113,6 +113,9 @@ public class GameCourt extends JPanel {
                 fuel.setText("Fuel: " + fuelLeft + " | ");
                 level.setText("Level 2");
                 
+                playing = false;
+                status.setText(" | Press to begin playing ");
+                
         break;
 	    case 3: ship = new SpaceShip(800, 100);
                 planets.add(new Celestial(200, 200, "earthlike.png", true));
